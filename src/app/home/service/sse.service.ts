@@ -13,16 +13,17 @@ export class SseService {
     const eventSource = new EventSource('http://localhost:8080/sse');
 
     return new Observable(observer => {
-      eventSource.onmessage = event => {
-        if(event.data === 'CLOSE') {
-          eventSource.close();
-          observer.unsubscribe()
-          return
-        }
+      eventSource.addEventListener('message', event => {
+        console.log('message: ', event.data)
         this.ngZone.run(() => {
           observer.next(JSON.parse(event.data))
         })
-      }
+      })
+      eventSource.addEventListener('close', event => {
+        console.log('close: ', event)
+        eventSource.close();
+        observer.unsubscribe()
+      })
     });
   }
 }
