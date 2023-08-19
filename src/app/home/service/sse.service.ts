@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable, NgZone} from '@angular/core';
 import {Observable} from "rxjs";
 import {IMessage} from "../IMessage";
 
@@ -7,7 +7,7 @@ import {IMessage} from "../IMessage";
 })
 export class SseService {
 
-  constructor() { }
+  constructor(private ngZone: NgZone) { }
 
   createEventSource(): Observable<IMessage> {
     const eventSource = new EventSource('http://localhost:8080/sse');
@@ -19,8 +19,10 @@ export class SseService {
           observer.unsubscribe()
           return
         }
-        observer.next(JSON.parse(event.data));
-      };
+        this.ngZone.run(() => {
+          observer.next(JSON.parse(event.data))
+        })
+      }
     });
   }
 }
