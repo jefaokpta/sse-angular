@@ -19,7 +19,7 @@ export class SseService {
           observer.next(JSON.parse(event.data))
         })
       })
-      this.eventSource!!.addEventListener('close', event => {
+      this.eventSource!!.addEventListener('close', () => {
         this.eventSource!!.close();
         observer.unsubscribe()
       })
