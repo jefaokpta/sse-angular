@@ -1,27 +1,32 @@
 import {Injectable, NgZone} from '@angular/core';
 import {Observable} from "rxjs";
-import {IMessage} from "../IMessage";
+import {IMessage} from "../../model/IMessage";
 
 @Injectable({
   providedIn: 'root'
 })
 export class SseService {
 
+  private eventSource?: EventSource
+
   constructor(private ngZone: NgZone) { }
 
   createEventSource(): Observable<IMessage> {
-    const eventSource = new EventSource('http://localhost:8080/sse');
-
+    this.eventSource = new EventSource('http://localhost:8080/sse');
     return new Observable(observer => {
-      eventSource.addEventListener('message', event => {
+      this.eventSource!!.addEventListener('message', event => {
         this.ngZone.run(() => {
           observer.next(JSON.parse(event.data))
         })
       })
-      eventSource.addEventListener('close', event => {
-        eventSource.close();
+      this.eventSource!!.addEventListener('close', event => {
+        this.eventSource!!.close();
         observer.unsubscribe()
       })
     });
+  }
+
+  closeEventSource() {
+    this.eventSource?.close();
   }
 }

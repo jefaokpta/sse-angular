@@ -1,0 +1,5 @@
+<h1>LISTA</h1>
+
+<a routerLink="/home">vai pra HOME</a>
+
+<p *ngFor="let message of list | async">{{message.messageId}} - {{message.text}}</p>
